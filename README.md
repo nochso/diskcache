@@ -12,7 +12,7 @@ Usage:
 	cache.CleanupSleep = time.Second * 3
 	cache.MaxFiles = 1000    // larger than we'll run into
 	cache.MaxBytes = 1 << 20 // 1mb cache
-	cache.FileNamer = diskcache.CopyNamer // Use keys as file names
+	cache.Mapper = diskcache.CopyMapper // Use keys for file names as they are
 	err = cache.Start()
 	// if err ...
 
@@ -23,6 +23,6 @@ Usage:
 ```
 
 ### Mapping keys to file names
-By default, keys are mapped to file names using the `OpportunisticNamer` that chooses between base64 or a combination of hash sums.
+By default, keys are mapped to file names using the `OpportunisticMapper` that chooses between base64 or a combination of hash sums.
 
-The `FileNamer` of `DiskCache` must have this signature: `func(key string) string`
+The `Mapper` function of `DiskCache` must have this signature: `func(key string) string`

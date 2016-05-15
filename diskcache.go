@@ -1,9 +1,6 @@
 package diskcache
 
 import (
-	"crypto/md5"
-	"crypto/sha256"
-	"encoding/base64"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -27,8 +24,8 @@ type DiskCache struct {
 	// Interval between clean up jobs
 	CleanupSleep time.Duration
 	// Function to map keys to names
-	FileNamer func(key string) string
-	shutdown  chan interface{}
+	Mapper   func(key string) string
+	shutdown chan interface{}
 }
 
 // new disk cache with sensible defaults
@@ -38,24 +35,8 @@ func NewDiskCache() *DiskCache {
 		MaxBytes:     1 << 20, // 1mb
 		MaxFiles:     256,
 		CleanupSleep: 60 * time.Second,
-		FileNamer:    OpportunisticNamer,
+		Mapper:       OpportunisticMapper,
 	}
-}
-
-// CopyNamer returns the unmodified key.
-func CopyNamer(key string) string {
-	return key
-}
-
-// OpportunisticNamer uses either base64 encoding or MD5+SHA224 hashing depending on key length.
-// To further avoid collisions, keys are prefix with "b" for base64 and "s" for hashes.
-func OpportunisticNamer(key string) string {
-	if float32(len(key))*(4.0/3.0) <= 90.0 {
-		return "b" + base64.RawURLEncoding.EncodeToString([]byte(key))
-	}
-	sha224 := sha256.Sum224([]byte(key))
-	md5 := md5.Sum([]byte(key))
-	return fmt.Sprintf("h%x%x%x", len(key), sha224, md5)
 }
 
 // Start validates and starts a DiskCache.
@@ -69,8 +50,8 @@ func (c *DiskCache) Start() error {
 	if c.CleanupSleep <= 0 {
 		return fmt.Errorf("CleanupSleep cannot be <= 0")
 	}
-	if c.FileNamer == nil {
-		return fmt.Errorf("FileNamer cannot be nil")
+	if c.Mapper == nil {
+		return fmt.Errorf("Mapper cannot be nil")
 	}
 	c.shutdown = make(chan interface{}, 1)
 	go func() {
@@ -122,7 +103,7 @@ func (c *DiskCache) Set(key string, val []byte) error {
 }
 
 func (c *DiskCache) keyToPath(key string) string {
-	return filepath.Join(c.Dir, c.FileNamer(key))
+	return filepath.Join(c.Dir, c.Mapper(key))
 }
 
 func (c *DiskCache) cleanup() error {

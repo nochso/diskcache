@@ -37,6 +37,7 @@ func NewDiskCache() *DiskCache {
 	}
 }
 
+// CopyNamer returns the unmodified key.
 func CopyNamer(key string) string {
 	return key
 }
@@ -52,6 +53,7 @@ func OpportunisticNamer(key string) string {
 	return fmt.Sprintf("h%x%x%x", len(key), sha224, md5)
 }
 
+// Start validates and starts a DiskCache.
 func (c *DiskCache) Start() error {
 
 	if c.MaxBytes <= 0 {
@@ -97,6 +99,7 @@ func (c *DiskCache) Start() error {
 	return nil
 }
 
+// Stop the clean up ticker.
 func (c *DiskCache) Stop() {
 	log.Printf("Stopping diskcache")
 	c.Shutdown <- true

@@ -86,7 +86,7 @@ func (c *DiskCache) Start() error {
 				}
 			case <-c.Shutdown:
 				ticker.Stop()
-				log.Printf("Shutting down disk cache")
+				log.Printf("Stopped diskcache clean up ticker")
 				return
 			}
 
@@ -95,6 +95,11 @@ func (c *DiskCache) Start() error {
 	}()
 
 	return nil
+}
+
+func (c *DiskCache) Stop() {
+	log.Printf("Stopping diskcache")
+	c.Shutdown <- true
 }
 
 // Read file contents from cache, returns ErrNotFound if not there

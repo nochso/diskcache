@@ -47,7 +47,7 @@ func TestDiskCacheBasic(t *testing.T) {
 		t.Fatalf("value of b is not as expected, instead was: %v", string(b))
 	}
 
-	cache.Shutdown <- true
+	cache.Stop()
 
 }
 
@@ -106,7 +106,7 @@ func TestDiskCacheMaxFiles(t *testing.T) {
 		t.Fatalf("test15 should still be in the cache, instead got error: %v", err)
 	}
 
-	cache.Shutdown <- true
+	cache.Stop()
 
 }
 
@@ -167,7 +167,7 @@ func TestDiskCacheMaxSize(t *testing.T) {
 		t.Fatalf("test15 should still be in the cache, instead got error: %v", err)
 	}
 
-	cache.Shutdown <- true
+	cache.Stop()
 
 }
 

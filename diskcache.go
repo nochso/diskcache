@@ -33,7 +33,7 @@ func NewDiskCache() *DiskCache {
 		MaxBytes:     1 << 20, // 1mb
 		MaxFiles:     256,
 		CleanupSleep: 60 * time.Second,
-		FileNamer:    CopyNamer,
+		FileNamer:    OpportunisticNamer,
 	}
 }
 

@@ -23,7 +23,7 @@ type DiskCache struct {
 	MaxFiles     int64
 	CleanupSleep time.Duration
 	Shutdown     chan interface{}
-	FileNamer    func(fname string) string
+	FileNamer    func(key string) string
 }
 
 // new disk cache with sensible defaults
@@ -93,9 +93,9 @@ func (c *DiskCache) Start() error {
 }
 
 // Read file contents from cache, returns ErrNotFound if not there
-func (c *DiskCache) Get(fname string) ([]byte, error) {
+func (c *DiskCache) Get(key string) ([]byte, error) {
 
-	p := c.keyToPath(fname)
+	p := c.keyToPath(key)
 
 	// update timestamp
 	now := time.Now()
@@ -110,9 +110,9 @@ func (c *DiskCache) Get(fname string) ([]byte, error) {
 	return b, nil
 }
 
-func (c *DiskCache) Set(fname string, val []byte) error {
+func (c *DiskCache) Set(key string, val []byte) error {
 
-	p := c.keyToPath(fname)
+	p := c.keyToPath(key)
 
 	return ioutil.WriteFile(p, val, 0644)
 

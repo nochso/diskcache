@@ -18,12 +18,17 @@ var ErrNotFound = fmt.Errorf("Item not found")
 
 // simple disk based cache
 type DiskCache struct {
-	Dir          string
-	MaxBytes     int64
-	MaxFiles     int64
+	// Root directory where files will be stored
+	Dir string
+	// Maximum amount of bytes to keep when cleaning up
+	MaxBytes int64
+	// Maximum amount of files to keep when cleaning up
+	MaxFiles int64
+	// Interval between clean up jobs
 	CleanupSleep time.Duration
 	Shutdown     chan interface{}
-	FileNamer    func(key string) string
+	// Function to map keys to names
+	FileNamer func(key string) string
 }
 
 // new disk cache with sensible defaults

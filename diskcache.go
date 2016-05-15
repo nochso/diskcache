@@ -136,7 +136,9 @@ func (c *DiskCache) keyToPath(key string) string {
 }
 
 func (c *DiskCache) cleanup() error {
-
+	if c.MaxFiles == 0 && c.MaxBytes == 0 {
+		return nil
+	}
 	files := make(FDataList, 0, 256)
 
 	err := filepath.Walk(c.Dir, func(p string, info os.FileInfo, err error) error {

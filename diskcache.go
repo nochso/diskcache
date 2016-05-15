@@ -55,31 +55,22 @@ func OpportunisticNamer(key string) string {
 
 // Start validates and starts a DiskCache.
 func (c *DiskCache) Start() error {
-
 	if c.MaxBytes < 0 {
 		return fmt.Errorf("MaxBytes cannot be < 0")
 	}
-
 	if c.MaxFiles < 0 {
 		return fmt.Errorf("MaxFiles cannot be < 0")
 	}
-
 	if c.CleanupSleep <= 0 {
 		return fmt.Errorf("CleanupSleep cannot be <= 0")
 	}
-
 	if c.FileNamer == nil {
 		return fmt.Errorf("FileNamer cannot be nil")
 	}
-
 	c.Shutdown = make(chan interface{}, 1)
-
 	go func() {
-
 		ticker := time.NewTicker(c.CleanupSleep)
-
 		for {
-
 			select {
 			case <-ticker.C:
 				err := c.cleanup()
@@ -91,11 +82,8 @@ func (c *DiskCache) Start() error {
 				log.Printf("Stopped diskcache clean up ticker")
 				return
 			}
-
 		}
-
 	}()
-
 	return nil
 }
 
@@ -107,7 +95,6 @@ func (c *DiskCache) Stop() {
 
 // Read file contents from cache, returns ErrNotFound if not there
 func (c *DiskCache) Get(key string) ([]byte, error) {
-
 	p := c.keyToPath(key)
 
 	// update timestamp
@@ -124,9 +111,7 @@ func (c *DiskCache) Get(key string) ([]byte, error) {
 }
 
 func (c *DiskCache) Set(key string, val []byte) error {
-
 	p := c.keyToPath(key)
-
 	return ioutil.WriteFile(p, val, 0644)
 
 }
@@ -171,7 +156,6 @@ func (c *DiskCache) cleanup() error {
 			break
 		}
 	}
-
 	return nil
 }
 

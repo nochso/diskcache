@@ -10,14 +10,12 @@ import (
 )
 
 func TestDiskCacheBasic(t *testing.T) {
-
 	fmt.Printf("TestDiskCacheBasic\n")
 
 	tmpdir, err := ioutil.TempDir("", "TestDiskCache")
 	if err != nil {
 		panic(err)
 	}
-
 	defer os.RemoveAll(tmpdir)
 
 	cache := NewDiskCache()
@@ -52,14 +50,12 @@ func TestDiskCacheBasic(t *testing.T) {
 }
 
 func TestDiskCacheMaxFiles(t *testing.T) {
-
 	fmt.Printf("TestDiskCacheMaxFiles\n")
 
 	tmpdir, err := ioutil.TempDir("", "TestDiskCache")
 	if err != nil {
 		panic(err)
 	}
-
 	defer os.RemoveAll(tmpdir)
 
 	cache := NewDiskCache()
@@ -91,7 +87,6 @@ func TestDiskCacheMaxFiles(t *testing.T) {
 	cache.Set("test14", []byte("test14"))
 	time.Sleep(time.Second * 2)
 	cache.Set("test15", []byte("test15"))
-
 	time.Sleep(time.Second * 4)
 
 	// should fail
@@ -105,13 +100,10 @@ func TestDiskCacheMaxFiles(t *testing.T) {
 	if err != nil {
 		t.Fatalf("test15 should still be in the cache, instead got error: %v", err)
 	}
-
 	cache.Stop()
-
 }
 
 func TestDiskCacheMaxSize(t *testing.T) {
-
 	fmt.Printf("TestDiskCacheMaxSize\n")
 
 	qmeg := make([]byte, 256<<10) // 256k
@@ -120,7 +112,6 @@ func TestDiskCacheMaxSize(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-
 	defer os.RemoveAll(tmpdir)
 
 	cache := NewDiskCache()
@@ -152,7 +143,6 @@ func TestDiskCacheMaxSize(t *testing.T) {
 	cache.Set("test14", qmeg)
 	time.Sleep(time.Second * 2)
 	cache.Set("test15", qmeg)
-
 	time.Sleep(time.Second * 4)
 
 	// should fail
@@ -166,9 +156,7 @@ func TestDiskCacheMaxSize(t *testing.T) {
 	if err != nil {
 		t.Fatalf("test15 should still be in the cache, instead got error: %v", err)
 	}
-
 	cache.Stop()
-
 }
 
 func TestCopyNamer(t *testing.T) {

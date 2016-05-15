@@ -81,6 +81,7 @@ func (c *DiskCache) Start() error {
 					log.Printf("Error during cleanup: %v", err)
 				}
 			case <-c.Shutdown:
+				ticker.Stop()
 				log.Printf("Shutting down disk cache")
 				return
 			}

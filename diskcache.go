@@ -56,12 +56,12 @@ func OpportunisticNamer(key string) string {
 // Start validates and starts a DiskCache.
 func (c *DiskCache) Start() error {
 
-	if c.MaxBytes <= 0 {
-		return fmt.Errorf("MaxBytes cannot be <= 0")
+	if c.MaxBytes < 0 {
+		return fmt.Errorf("MaxBytes cannot be < 0")
 	}
 
-	if c.MaxFiles <= 0 {
-		return fmt.Errorf("MaxFiles cannot be <= 0")
+	if c.MaxFiles < 0 {
+		return fmt.Errorf("MaxFiles cannot be < 0")
 	}
 
 	if c.CleanupSleep <= 0 {
@@ -161,7 +161,7 @@ func (c *DiskCache) cleanup() error {
 	s := files.TotalSize()
 	fcount := len(files)
 	for i := 0; i < len(files); i++ {
-		if s > c.MaxBytes || int64(fcount) > c.MaxFiles {
+		if (c.MaxBytes > 0 && s > c.MaxBytes) || (c.MaxFiles > 0 && int64(fcount) > c.MaxFiles) {
 			s -= files[i].Size
 			os.Remove(filepath.Join(c.Dir, files[i].Path))
 			fcount--

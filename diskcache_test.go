@@ -1,7 +1,6 @@
 package diskcache
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -10,8 +9,6 @@ import (
 )
 
 func TestDiskCacheBasic(t *testing.T) {
-	fmt.Printf("TestDiskCacheBasic\n")
-
 	tmpdir, err := ioutil.TempDir("", "TestDiskCache")
 	if err != nil {
 		panic(err)
@@ -50,8 +47,6 @@ func TestDiskCacheBasic(t *testing.T) {
 }
 
 func TestDiskCacheMaxFiles(t *testing.T) {
-	fmt.Printf("TestDiskCacheMaxFiles\n")
-
 	tmpdir, err := ioutil.TempDir("", "TestDiskCache")
 	if err != nil {
 		panic(err)
@@ -104,8 +99,6 @@ func TestDiskCacheMaxFiles(t *testing.T) {
 }
 
 func TestDiskCacheMaxSize(t *testing.T) {
-	fmt.Printf("TestDiskCacheMaxSize\n")
-
 	qmeg := make([]byte, 256<<10) // 256k
 
 	tmpdir, err := ioutil.TempDir("", "TestDiskCache")

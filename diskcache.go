@@ -66,6 +66,10 @@ func (c *DiskCache) Start() error {
 		return fmt.Errorf("CleanupSleep cannot be <= 0")
 	}
 
+	if c.FileNamer == nil {
+		return fmt.Errorf("FileNamer cannot be nil")
+	}
+
 	c.Shutdown = make(chan interface{}, 1)
 
 	go func() {
@@ -120,13 +124,7 @@ func (c *DiskCache) Set(key string, val []byte) error {
 }
 
 func (c *DiskCache) keyToPath(key string) string {
-	var name string
-	if c.FileNamer == nil {
-		name = key
-	} else {
-		name = c.FileNamer(key)
-	}
-	return filepath.Join(c.Dir, name)
+	return filepath.Join(c.Dir, c.FileNamer(key))
 }
 
 func (c *DiskCache) cleanup() error {

@@ -169,3 +169,9 @@ func TestDiskCacheMaxSize(t *testing.T) {
 	cache.Shutdown <- true
 
 }
+
+func TestCopyNamer(t *testing.T) {
+	if CopyNamer("foobar") != "foobar" {
+		t.Error("Must return original input")
+	}
+}

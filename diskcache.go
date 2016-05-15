@@ -20,6 +20,7 @@ type DiskCache struct {
 	MaxFiles     int64
 	CleanupSleep time.Duration
 	Shutdown     chan interface{}
+	FileNamer    func(fname string) string
 }
 
 // new disk cache with sensible defaults
@@ -29,7 +30,12 @@ func NewDiskCache() *DiskCache {
 		MaxBytes:     1 << 20, // 1mb
 		MaxFiles:     256,
 		CleanupSleep: 60 * time.Second,
+		FileNamer:    CopyNamer,
 	}
+}
+
+func CopyNamer(key string) string {
+	return key
 }
 
 func (c *DiskCache) Start() error {
@@ -75,7 +81,7 @@ func (c *DiskCache) Start() error {
 // Read file contents from cache, returns ErrNotFound if not there
 func (c *DiskCache) Get(fname string) ([]byte, error) {
 
-	p := filepath.Join(c.Dir, fname)
+	p := c.keyToPath(fname)
 
 	// update timestamp
 	now := time.Now()
@@ -92,10 +98,20 @@ func (c *DiskCache) Get(fname string) ([]byte, error) {
 
 func (c *DiskCache) Set(fname string, val []byte) error {
 
-	p := filepath.Join(c.Dir, fname)
+	p := c.keyToPath(fname)
 
 	return ioutil.WriteFile(p, val, 0644)
 
+}
+
+func (c *DiskCache) keyToPath(key string) string {
+	var name string
+	if c.FileNamer == nil {
+		name = key
+	} else {
+		name = c.FileNamer(key)
+	}
+	return filepath.Join(c.Dir, name)
 }
 
 func (c *DiskCache) cleanup() error {

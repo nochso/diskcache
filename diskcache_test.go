@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 	"testing"
 	"time"
 )
@@ -173,5 +174,14 @@ func TestDiskCacheMaxSize(t *testing.T) {
 func TestCopyNamer(t *testing.T) {
 	if CopyNamer("foobar") != "foobar" {
 		t.Error("Must return original input")
+	}
+}
+
+func TestOpportunisticFileNamer(t *testing.T) {
+	if OpportunisticNamer("short key") != "bc2hvcnQga2V5" {
+		t.Error("Short keys must be base64 encoded")
+	}
+	if OpportunisticNamer(strings.Repeat("x", 100)) != "h64c49c94d0d9ac260177d358388f0461b8ea251125c11187b0878a361eaed563ecafb4bcc5654c597a421547b2" {
+		t.Error("Long keys must be hashed")
 	}
 }

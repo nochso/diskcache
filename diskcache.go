@@ -1,6 +1,9 @@
 package diskcache
 
 import (
+	"crypto/md5"
+	"crypto/sha256"
+	"encoding/base64"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -36,6 +39,17 @@ func NewDiskCache() *DiskCache {
 
 func CopyNamer(key string) string {
 	return key
+}
+
+// OpportunisticNamer uses either base64 encoding or MD5+SHA224 hashing depending on key length.
+// To further avoid collisions, keys are prefix with "b" for base64 and "s" for hashes.
+func OpportunisticNamer(key string) string {
+	if float32(len(key))*(4.0/3.0) <= 90.0 {
+		return "b" + base64.RawURLEncoding.EncodeToString([]byte(key))
+	}
+	sha224 := sha256.Sum224([]byte(key))
+	md5 := md5.Sum([]byte(key))
+	return fmt.Sprintf("h%x%x%x", len(key), sha224, md5)
 }
 
 func (c *DiskCache) Start() error {

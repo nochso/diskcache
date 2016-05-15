@@ -26,9 +26,9 @@ type DiskCache struct {
 	MaxFiles int64
 	// Interval between clean up jobs
 	CleanupSleep time.Duration
-	Shutdown     chan interface{}
 	// Function to map keys to names
 	FileNamer func(key string) string
+	shutdown  chan interface{}
 }
 
 // new disk cache with sensible defaults
@@ -72,7 +72,7 @@ func (c *DiskCache) Start() error {
 	if c.FileNamer == nil {
 		return fmt.Errorf("FileNamer cannot be nil")
 	}
-	c.Shutdown = make(chan interface{}, 1)
+	c.shutdown = make(chan interface{}, 1)
 	go func() {
 		ticker := time.NewTicker(c.CleanupSleep)
 		for {
@@ -82,7 +82,7 @@ func (c *DiskCache) Start() error {
 				if err != nil {
 					log.Printf("Error during cleanup: %v", err)
 				}
-			case <-c.Shutdown:
+			case <-c.shutdown:
 				ticker.Stop()
 				log.Printf("Stopped diskcache clean up ticker")
 				return
@@ -95,7 +95,7 @@ func (c *DiskCache) Start() error {
 // Stop the clean up ticker.
 func (c *DiskCache) Stop() {
 	log.Printf("Stopping diskcache")
-	c.Shutdown <- true
+	c.shutdown <- true
 }
 
 // Read file contents from cache, returns ErrNotFound if not there

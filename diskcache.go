@@ -17,9 +17,11 @@ var ErrNotFound = fmt.Errorf("Item not found")
 type DiskCache struct {
 	// Root directory where files will be stored
 	Dir string
-	// Maximum amount of bytes to keep when cleaning up
+	// Maximum amount of bytes to keep when cleaning up.
+	// Zero value ignores the limit.
 	MaxBytes int64
-	// Maximum amount of files to keep when cleaning up
+	// Maximum amount of files to keep when cleaning up.
+	// Zero value ignores the limit.
 	MaxFiles int64
 	// Interval between clean up jobs
 	CleanupSleep time.Duration
@@ -96,12 +98,13 @@ func (c *DiskCache) Get(key string) ([]byte, error) {
 	return b, nil
 }
 
+// Set a value by writing to disk.
 func (c *DiskCache) Set(key string, val []byte) error {
 	p := c.keyToPath(key)
 	return ioutil.WriteFile(p, val, 0644)
-
 }
 
+// Combines base directory with the mapped key.
 func (c *DiskCache) keyToPath(key string) string {
 	return filepath.Join(c.Dir, c.Mapper(key))
 }

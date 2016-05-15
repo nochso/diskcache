@@ -1,25 +1,24 @@
-diskcache
-=========
+# diskcache
 
 A simple disk-backed cache in golang.
 
-Usage:
-------
+- Map keys to file names
+- Timer-based LRU (least recently used) eviction
+
+**[Godoc documentation](https://godoc.org/github.com/nochso/diskcache)**
+
+## Getting started
 
 ```go
-	cache := NewDiskCache()
-	cache.Dir = tmpdir
-	cache.CleanupSleep = time.Second * 3
-	cache.MaxFiles = 1000    // larger than we'll run into
-	cache.MaxBytes = 1 << 20 // 1mb cache
-	cache.Mapper = diskcache.CopyMapper // Use keys for file names as they are
-	err = cache.Start()
-	// if err ...
+cache := diskcache.NewDiskCache()
+cache.Dir = "cache" // defaults to os.TempDir()
+err = cache.Start()
+// if err ...
 
-	err = cache.Set("thekey", []byte("the value"))
-	// if err ...
-	b, err := cache.Get("thekey")
-	// if err ...
+err = cache.Set("thekey", []byte("the value"))
+// if err ...
+b, err := cache.Get("thekey")
+// if err ...
 ```
 
 ### Mapping keys to file names

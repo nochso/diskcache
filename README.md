@@ -3,27 +3,39 @@
 A simple disk-backed cache in golang.
 
 - Map keys to file names
-- Timer-based LRU (least recently used) eviction
+- Timer-based eviction of files
+    - Least recently used
+    - Least recently accessed
 
 **[Godoc documentation](https://godoc.org/github.com/nochso/diskcache)**
 
-This is a fork of [bradleypeabody/diskcache](https://github.com/bradleypeabody/diskcache).
+- [Installation](#installation)
+- [Getting started](#getting-started)
+- [DiskCache settings](#diskcache-settings)
+    - [New() Defaults](#new-defaults)
+- [Mapping keys to file names](#mapping-keys-to-file-names)
+- [Credits](#credits)
+- [License](#license)
 
-## Getting started
-
-```go
-cache := diskcache.NewDiskCache()
-cache.Dir = "cache" // defaults to os.TempDir()
-err = cache.Start()
-// if err ...
-
-err = cache.Set("thekey", []byte("the value"))
-// if err ...
-b, err := cache.Get("thekey")
-// if err ...
+# Installation
+```
+go get github.com/nochso/diskcache
 ```
 
-### DiskCache settings
+# Getting started
+
+```go
+// Create a new DiskCache. See below for the default settings.
+cache := diskcache.New()
+// Validate and start the clean up handler.
+err := cache.Start()
+err = cache.Set("thekey", []byte("the value"))
+b, err := cache.Get("thekey")
+// If you don't need the cache anymore during runtime, stop the clean up ticker.
+cache.Stop()
+```
+
+# DiskCache settings
 You can modify the following settings before calling `Start`.
 ```go
 type DiskCache struct {
@@ -45,7 +57,30 @@ type DiskCache struct {
 }
 ```
 
-### Mapping keys to file names
-By default, keys are mapped to file names using the `OpportunisticMapper` that chooses between base64 or a combination of hash sums.
+## New() Defaults
+A DiskCache created with `diskcache.New()` defaults to:
 
-The `Mapper` function of `DiskCache` must have this signature: `func(key string) string`
+```go
+DiskCache{
+    Dir:          os.TempDir(),
+    MaxBytes:     1024 * 1024 * 512, // 512MB
+    MaxFiles:     0,
+    CleanupSleep: time.Minute * 5,
+    ModifyOnGet:  false,
+    Mapper:       OpportunisticMapper,
+}
+```
+
+# Mapping keys to file names
+Available mappers:
+* `OpportunisticMapper` chooses between base64 or a combination of hash sums based on the length of the key.
+* `CopyMapper` uses the key as a file path as it is.
+
+You can use your own mapper by creating a function with this signature: `func(key string) string`
+
+# Credits
+This is a fork of [bradleypeabody/diskcache](https://github.com/bradleypeabody/diskcache).
+
+# License
+Just like the upstream repo, this library is released under the Apache 2.0 license. See [LICENSE](LICENSE) for the
+full license text.

@@ -37,10 +37,10 @@ type DiskCache struct {
 func NewDiskCache() *DiskCache {
 	return &DiskCache{
 		Dir:          os.TempDir(),
-		MaxBytes:     1 << 20, // 1mb
-		MaxFiles:     256,
-		CleanupSleep: 60 * time.Second,
-		ModifyOnGet:  true,
+		MaxBytes:     1024 * 1024 * 512, // 512MB
+		MaxFiles:     0,
+		CleanupSleep: time.Minute * 5,
+		ModifyOnGet:  false,
 		Mapper:       OpportunisticMapper,
 	}
 }

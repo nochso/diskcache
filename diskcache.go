@@ -59,6 +59,12 @@ func (c *DiskCache) Start() error {
 	if c.Mapper == nil {
 		return fmt.Errorf("Mapper cannot be nil")
 	}
+	if !exists(c.Dir) {
+		err := os.MkdirAll(c.Dir, 0744)
+		if err != nil {
+			return err
+		}
+	}
 	c.shutdown = make(chan interface{}, 1)
 	go func() {
 		ticker := time.NewTicker(c.CleanupSleep)
@@ -77,6 +83,12 @@ func (c *DiskCache) Start() error {
 		}
 	}()
 	return nil
+}
+
+// exists returns whether the given file or directory exists or not
+func exists(path string) bool {
+	_, err := os.Stat(path)
+	return err == nil
 }
 
 // Stop the clean up ticker.

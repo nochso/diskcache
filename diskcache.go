@@ -155,6 +155,7 @@ func (c *DiskCache) cleanup() error {
 	// trim down until size and file count limitations are met
 	s := files.TotalSize()
 	fcount := len(files)
+	log.Printf("diskcache: Found %d files and %d bytes before clean up.", fcount, s)
 	for i := 0; i < len(files); i++ {
 		if (c.MaxBytes > 0 && s > c.MaxBytes) || (c.MaxFiles > 0 && int64(fcount) > c.MaxFiles) {
 			s -= files[i].Size
@@ -164,6 +165,7 @@ func (c *DiskCache) cleanup() error {
 			break
 		}
 	}
+	log.Printf("diskcache: %d files and %d bytes left after clean up.", fcount, s)
 	return nil
 }
 

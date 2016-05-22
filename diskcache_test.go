@@ -15,7 +15,7 @@ func TestDiskCacheBasic(t *testing.T) {
 	}
 	defer os.RemoveAll(tmpdir)
 
-	cache := NewDiskCache()
+	cache := New()
 	cache.Dir = tmpdir
 	cache.CleanupSleep = time.Second * 3
 	err = cache.Start()
@@ -53,7 +53,7 @@ func TestDiskCacheMaxFiles(t *testing.T) {
 	}
 	defer os.RemoveAll(tmpdir)
 
-	cache := NewDiskCache()
+	cache := New()
 	cache.Dir = tmpdir
 	cache.CleanupSleep = time.Second * 3
 	cache.MaxFiles = 10
@@ -107,7 +107,7 @@ func TestDiskCacheMaxSize(t *testing.T) {
 	}
 	defer os.RemoveAll(tmpdir)
 
-	cache := NewDiskCache()
+	cache := New()
 	cache.Dir = tmpdir
 	cache.CleanupSleep = time.Second * 3
 	cache.MaxFiles = 1000    // larger than we'll run into

@@ -33,8 +33,8 @@ type DiskCache struct {
 	shutdown    chan interface{}
 }
 
-// new disk cache with sensible defaults
-func NewDiskCache() *DiskCache {
+// New disk cache with sensible defaults
+func New() *DiskCache {
 	return &DiskCache{
 		Dir:          os.TempDir(),
 		MaxBytes:     1024 * 1024 * 512, // 512MB

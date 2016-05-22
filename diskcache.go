@@ -26,8 +26,11 @@ type DiskCache struct {
 	// Interval between clean up jobs
 	CleanupSleep time.Duration
 	// Function to map keys to names
-	Mapper   func(key string) string
-	shutdown chan interface{}
+	Mapper func(key string) string
+	// If true, items will expire by use age.
+	// If false, items will expire by their creation age.
+	ModifyOnGet bool
+	shutdown    chan interface{}
 }
 
 // new disk cache with sensible defaults
@@ -37,6 +40,7 @@ func NewDiskCache() *DiskCache {
 		MaxBytes:     1 << 20, // 1mb
 		MaxFiles:     256,
 		CleanupSleep: 60 * time.Second,
+		ModifyOnGet:  true,
 		Mapper:       OpportunisticMapper,
 	}
 }
@@ -86,8 +90,10 @@ func (c *DiskCache) Get(key string) ([]byte, error) {
 	p := c.keyToPath(key)
 
 	// update timestamp
-	now := time.Now()
-	os.Chtimes(p, now, now)
+	if c.ModifyOnGet {
+		now := time.Now()
+		os.Chtimes(p, now, now)
+	}
 
 	// read file contents
 	b, err := ioutil.ReadFile(p)

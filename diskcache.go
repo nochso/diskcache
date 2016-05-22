@@ -66,6 +66,7 @@ func (c *DiskCache) Start() error {
 		}
 	}
 	c.shutdown = make(chan interface{}, 1)
+	c.cleanup()
 	go func() {
 		ticker := time.NewTicker(c.CleanupSleep)
 		for {
